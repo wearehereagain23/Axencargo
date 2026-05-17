@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
+        import { getFirestore, doc, setDoc, getDoc, query, onSnapshot, collection , orderBy, where, serverTimestamp} from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
+        import {  getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
+        
+        // TODO: Add SDKs for Firebase products that you want to use
+        // https://firebase.google.com/docs/web/setup#available-libraries
+        
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAvEfPdq7dnEuiBiducH8PmQqtKS_Xd0Ew",
+          authDomain: "smart-logix.firebaseapp.com",
+          projectId: "smart-logix",
+          storageBucket: "smart-logix.appspot.com",
+          messagingSenderId: "877833019857",
+          appId: "1:877833019857:web:d8c1259a03a324c58a80f0"
+        };
+        
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+        
+
+            //  setDoc(doc(db, "time", 'time'), {
+            //     time: serverTimestamp()
+            //  }).then(()=>{
+            //     alert('saved')
+            //  })
+
+
+
+
+setInterval(()=>{
+let date = new Date();
+let options = {timeZone: 'Africa/Lagos'};
+let eastCoastTime = date.toLocaleString("en-US", { timeZone: 'Africa/Algiers'})
+
+console.log(eastCoastTime)
+const result = new Date(eastCoastTime).getTime();
+  let timespent =  result - 1721595622000;
+console.log('timespent', timespent / 1000)
+console.log('in mili', result);
+  if(result > 1721594924000){
+    console.log('done')
+}else{
+    console.log('not yet')
+}
+}, 2000)
+
+
+
+            </script>
+
+</head>
+<body >
+
+</body>
+</html>

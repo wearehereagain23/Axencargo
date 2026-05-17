@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>map</title>
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <style>
+        #map {
+            width: 100%;
+            height: 100vh;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="map">
+
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <!-- <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" /> -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css" />
+    <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
+
+
+    <script type="module">
+
+
+
+        let mily = 10000;
+        let mily_sec = Math.floor(mily / 1000);
+        console.log('MILLY', mily_sec)
+        var map = L.map('map').setView([6.745102, 6.128055], 3);
+        
+
+                let date = new Date();
+                let options = { timeZone: 'Africa/Lagos' };
+                let eastCoastTime = date.toLocaleString("en-US", { timeZone: 'Africa/Algiers' })
+
+                //current Date & Time in miliseconds
+            
+                const currentTime = new Date(eastCoastTime).getTime();
+
+                let comparetime = currentTime - localStorage.getItem('savedTime');
+                let timespent = comparetime / 1000;
+                let totaltime = Math.floor(timespent / mily_sec);
+                 console.log('timespent', timespent)
+                 console.log('totaltime', totaltime)
+
+                 
+                 setInterval(()=> {
+                    if(totaltime > localStorage.getItem('index')){
+                     //alert('bigger than');
+                     console.log('finish')
+                    
+                   localStorage.setItem('savedTime', currentTime);
+                   
+                }else{
+                    console.log('not finish')
+                     localStorage.setItem('savedTime', currentTime); 
+    
+                }
+                 }, 2000);
+
+                 
+                 //PAGE RELOAD EVERY 1-MINIT
+                //  setInterval(()=> {
+                //     location.reload();
+                //  }, 60000);
+                
+
+      
+
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        }).addTo(map);
+
+
+        var myIcon = L.icon({
+            iconUrl: 'red.png',
+            iconSize: [48, 55],
+            iconAnchor: [24, 40],
+            popupAnchor: [-1, -25],
+        });
+
+
+
+        L.circle([8.400304, 7.653494], {
+        className: 'pulse',
+        weight: 15
+        }).addTo(map)
+        .bindPopup('Delivery location.')
+        .openPopup();
+
+        L.circle([6.745102, 6.128055],{
+            color: 'red',
+            fillColor: '#f03',
+            opacity: 0.7,
+            radius: 500,
+            weight: 20
+        }).addTo(map);
+
+
+
+        var marker = L.marker([6.745102, 6.128055],
+            { icon: myIcon }).addTo(map)
+            .bindPopup('Shipment.<br>On the way.')
+            .openPopup();
+
+        L.Routing.control({
+            show: false,
+            waypoints: [
+                L.latLng(Number(localStorage.getItem('lat')), Number(localStorage.getItem('lng'))),
+                L.latLng(6.746701, 6.118916)
+            ],
+            lineOptions: {
+      styles: [{color: 'green', opacity: 1, weight: 5}]
+   }
+        }).on('routesfound', function (e) {
+             console.log('from route', Number(localStorage.getItem('lat')), Number(localStorage.getItem('lng')));
+
+            e.routes[0].coordinates.forEach(function (coord, index) {
+              
+                localStorage.setItem('index', index)
+                 //Current date and time
+                
+                
+                  // localStorage.setItem('savedTime', currentTime);  
+
+
+                setTimeout(() => {
+                    ///MAP FUNCTIONS ON TIME EFFECT
+
+                    marker.setLatLng([coord.lat, coord.lng])
+                    console.log('wwww', totaltime);
+                    // console.log('from logzz.', e.routes[0].coordinates)
+                      localStorage.setItem('lat', e.routes[0].coordinates[totaltime].lat)
+                      localStorage.setItem('lng', e.routes[0].coordinates[totaltime].lng)
+                    //   console.log('index',coord)
+                }, mily * index);
+
+                 console.log('sec', Math.floor(mily/1000 % 60000000000000000000000 * index))
+                 let sec = Math.floor(mily/1000 % 60000000000000000000000)
+                 console.log('mint', Math.floor(sec / 60 * index));
+                let sss = Math.floor(mily / 1000 % 60000000000000000000000 * index);
+                // console.log('this is from math', Math.floor(sss/3600))
+
+                let ss = Math.floor(mily / 1000 % 60000000000000000000000);
+
+                  console.log('hours', Math.floor(sec/3600 * index))
+            })
+        })
+        .addTo(map);
+
+
+
+      //COVER PASSED AREA WITH GREEN LINE
+
+
+      var marker3 = L.marker([6.745102, 6.128055]
+    ).addTo(map)
+
+    L.Routing.control({
+      show: false,
+    waypoints: [
+      L.latLng(6.745102, 6.128055),
+      L.latLng(9.889276, 8.878906)
+    ],
+    lineOptions: {
+        styles: [{color: 'green', opacity: 1, weight: 5}]
+   }
+    }).on('routesfound', function(e) {
+    })
+    .addTo(map);
+
+     //KEEP THE ORIGINAL VALUE
+
+     var marker2 = L.marker([6.745102, 6.128055]
+    ).addTo(map)
+
+    L.Routing.control({
+      show: false,
+    waypoints: [
+      L.latLng(6.745102, 6.128055),
+      L.latLng(8.400304, 7.653494)
+    ],
+    lineOptions: {
+      styles: [{color: 'red', opacity: 0.3, weight: 5}]
+   }
+    }).on('routesfound', function(e) {
+    })
+    .addTo(map);
+
+
+
+
+
+    </script>
+    <style>
+        .pulse {
+    animation: pulsate 1s ease-out;
+    -webkit-animation: pulsate 1s ease-out;
+    -webkit-animation-iteration-count: infinite; 
+    opacity: 0.0
+        }
+
+    @keyframes pulsate {
+        0% {transform: opacity: 0.0;}
+        50% {opacity: 1.0;}
+        100% {transform: opacity: 0.0;}
+    }
+    </style>
+</body>
+
+</html>

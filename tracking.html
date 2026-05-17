@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>Smart-logix | Track & Trace</title>
+
+  <link href="css/bootstrap.min.css" rel="stylesheet">
+  <link href="css/style.css" rel="stylesheet">
+  <link rel="shortcut icon" href="images/favicon.png" type="image/x-icon">
+  <link rel="icon" href="images/favicon.png" type="image/x-icon">
+
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  <!--[if lt IE 9]><script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.js"></script><![endif]-->
+  <!--[if lt IE 9]><script src="js/respond.js"></script><![endif]-->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.css">
+
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="sweetalert2.min.js"></script>
+  <link rel="stylesheet" href="sweetalert2.min.css">
+  <script src="./config.js"></script>
+  <script type="module">
+
+    function showSpinnerModal() {
+      document.getElementById('spinnerModal').style.display = 'flex';
+    }
+
+    function hideSpinnerModal() {
+      document.getElementById('spinnerModal').style.display = 'none';
+    }
+
+
+    import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+    const supabase = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_KEY);
+
+
+
+    let formDAT = document.getElementById('codex');
+    formDAT.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const formData = new FormData(formDAT);
+      let trackid = (formData.get('search'));
+
+      async function fetchData() {
+        showSpinnerModal();
+
+        const { data, error } = await supabase
+          .from('axencargo')
+          .select('*')
+          .eq('trackingcode', trackid);
+        if (error) {
+          alert('network error')
+        } else {
+
+          hideSpinnerModal()
+          if (data.length == 0) {
+            Swal.fire({
+              title: 'ERROR',
+              text: "Invalid tracking number!",
+              icon: 'error',
+              showCancelButton: false,
+              allowOutsideClick: false,
+              allowEscapeKey: false,
+              confirmButtonText: 'OK!'
+            })
+          } else {
+            data.forEach(doc => {
+              if (doc.trackingStatus == 'active') {
+                window.location.href = `./tracking/index.html?i=${doc.trackingcode}`
+              } else {
+                Swal.fire({
+                  title: 'ERROR',
+                  text: `${doc.disableMessage}`,
+                  icon: 'error',
+                  showCancelButton: false,
+                  allowOutsideClick: false,
+                  allowEscapeKey: false,
+                  confirmButtonText: 'OK!'
+                })
+              }
+
+
+            });
+          }
+        }
+      } fetchData();
+
+    });
+    //  window.location.href = `../trackingpage/index.html?i=${docSnap.data().trackingcode}&url=${docSnap.data().mapurl}`
+  </script>
+
+</head>
+
+<body>
+  <script src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"></script>
+
+  <script>
+    var notyf = new Notyf({
+      duration: 4000,
+      position: {
+        x: 'right',
+        y: 'top',
+      },
+    });
+
+  </script>
+  <div class="page-wrapper">
+
+    <div class="preloader"></div>
+
+    <!-- SPINNER DIV -->
+    <div id="spinnerModal" class="spinner-modal" style="display: none;">
+      <div class="spinner-content">
+        <div class="spinner"></div>
+        <p>Loading, please wait...</p>
+      </div>
+    </div>
+    <!-- SPINNER DIV -->
+
+    <section class>
+      <div class="auto-container pt-120 pb-70">
+        <div class="row">
+          <div class="">
+            <div class="error-page__inner">
+              <div class="">
+                <h3 class="error-page__sub-title">Tracking!</h3>
+              </div>
+              <p class="error-page__text">Enter your tracking code or container number.</p>
+              <form id="codex" class="error-page__form">
+                <div class="error-page__form-input">
+                  <input id="search" name="search" type="search" placeholder="Enter tracking code or number">
+
+                  <button type="submit"
+                    style="background-color: rgb(249, 195, 0); align-items: center; justify-items: center; display: flex; text-align: center;"><svg
+                      xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-search"
+                      viewBox="0 0 16 16" style="margin-left: 30%;">
+                      <path
+                        d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
+                    </svg></button>
+                </div>
+              </form>
+              <p><u>What is a shipment or container number?</u></p>
+              <div class="ww">
+                <p class="error-page__text wvv">A container number is a unique number made up of 6 letters and 10-13
+                  numbers printed on your booking forms and on the top right of every container door.</p>
+              </div>
+
+              <style>
+                .ww {
+                  width: 100%;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                }
+
+                .wvv {
+                  width: 30%;
+                }
+
+                @media screen and (max-width:992px) {
+                  .wvv {
+                    width: 100%;
+                  }
+                }
+              </style>
+              <a href="index.html" class="theme-btn btn-style-one shop-now"><span class="btn-title">Back to
+                  Home</span></a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <div class="scroll-to-top scroll-to-target" data-target="html"><span class="fa fa-angle-up"></span></div>
+  <script src="js/jquery.js"></script>
+  <script src="js/popper.min.js"></script>
+  <script src="js/bootstrap.min.js"></script>
+  <script src="js/jquery.fancybox.js"></script>
+  <script src="js/jquery-ui.js"></script>
+  <script src="js/wow.js"></script>
+  <script src="js/appear.js"></script>
+  <script src="js/select2.min.js"></script>
+  <script src="js/script.js"></script>
+
+  <!-- Start of HubSpot Embed Code -->
+  <script type="text/javascript" id="hs-script-loader" async defer src="//js-eu1.hs-scripts.com/145124516.js"></script>
+  <!-- End of HubSpot Embed Code -->
+
+
+  <!-- SPINNER CSS -->
+  <style>
+    .spinner-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.938);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+    }
+
+    .spinner-content {
+      text-align: center;
+      color: white;
+    }
+
+    .spinner {
+      border: 6px solid #f3f3f3;
+      border-top: 6px solid #ffffff;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 10px;
+    }
+
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+  </style>
+
+</body>
+
+</html>

@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="author" content="CodeHim">
+  <title>Axencargo Tracking</title>
+
+  <link rel="stylesheet" href="css/style.css">
+
+  <link rel="stylesheet" href="css/demo.css">
+  <link href="css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+  <script type="text/javascript">
+
+    function generateNow() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const USERID = urlParams.get('i');
+      JsBarcode("#barcode", USERID, {
+        width: isMobile ? 1 : 2
+      });
+    }
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+
+  </script>
+
+
+  <script src="../config.js"></script>
+  <script type="module">
+    import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+    const supabase = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_KEY);
+    const url = window.location.search;
+    const urldata = new URLSearchParams(url);
+    const USERID = urldata.get("i");
+
+
+
+    async function fetchData() {
+
+      const { data, error } = await supabase
+        .from('axencargo')
+        .select('*')
+        .eq('trackingcode', USERID);
+      if (error) {
+        console.error('Error fetching data:', error);
+      } else {
+        data.forEach(doc => {
+          if (doc.mapstatus === 'on') {
+
+          }
+
+
+
+
+
+          document.getElementById("dtt").innerHTML = doc.date;
+          document.getElementById("stt").innerHTML = doc.activestatus;
+          document.getElementById("flg1").src = doc.fromFlag;
+          document.getElementById("flg2").src = doc.toFlag;
+
+
+
+          //  ORDER STATUS TIME
+
+          document.getElementById('tim').innerHTML = doc.date
+          document.getElementById('tim2').innerHTML = doc.date2
+          document.getElementById('tim3').innerHTML = doc.date3
+          document.getElementById('tim4').innerHTML = doc.date4
+          document.getElementById('tim5').innerHTML = doc.date5
+          document.getElementById('tim6').innerHTML = doc.date6
+
+          // //  SHIPPER DATA
+          document.getElementById('tfname').innerHTML = doc.fullname
+          document.getElementById('tfname2').innerHTML = doc.country
+          document.getElementById('cityy').innerHTML = doc.city
+          document.getElementById('tfname3').innerHTML = doc.email
+          document.getElementById('tfname4').innerHTML = doc.phone
+
+
+          // //  RECEIVER DATA
+          document.getElementById('Rtfname').innerHTML = doc.fullname2
+          document.getElementById('Rtfname2').innerHTML = doc.country2
+          document.getElementById('Rtfname3').innerHTML = doc.city2
+          document.getElementById('Rtfname4').innerHTML = doc.address
+          document.getElementById('Rtfname5').innerHTML = doc.postcode
+          document.getElementById('Rtfname6').innerHTML = doc.email2
+          document.getElementById('Rtfname7').innerHTML = doc.phone2
+
+          //   SHIPMENT DETAILS
+          document.getElementById('Shi').innerHTML = doc.country
+          document.getElementById('Shi2').innerHTML = doc.country2
+          document.getElementById('Shi3').innerHTML = doc.activestatus
+          document.getElementById('Shi4').innerHTML = doc.carrier
+          document.getElementById('Shi5').innerHTML = doc.method
+          document.getElementById('Shi6').innerHTML = doc.RN
+          document.getElementById('Shi8').innerHTML = doc.date
+          document.getElementById('comment').innerHTML = doc.comment
+          document.getElementById('comment2').innerHTML = doc.comment2
+          document.getElementById('comment3').innerHTML = doc.comment3
+          document.getElementById('comment4').innerHTML = doc.comment4
+          document.getElementById('comment5').innerHTML = doc.comment5
+          document.getElementById('comment6').innerHTML = doc.comment6
+          document.getElementById('tdd1').innerHTML = doc.package
+          document.getElementById('tdd2').innerHTML = doc.totalquantity
+          document.getElementById('tdd3').innerHTML = doc.totalweight
+          document.getElementById('tdd4').innerHTML = doc.des
+
+          //  ACTIVE BLINKER
+
+          if (doc.activestatus === "Order Placed") {
+            const ST1 = document.getElementById('ss1')
+            ST1.classList.add("blinker", "status-current");
+          }
+          if (doc.activestatus === "Order Confirmed") {
+            const ST1 = document.getElementById('ss2')
+            ST1.classList.add("blinker", "status-current");
+          }
+
+          if (doc.activestatus === "Intransit") {
+            const ST1 = document.getElementById('ss3')
+            ST1.classList.add("blinker", "status-current");
+          }
+
+          if (doc.activestatus === "Near by Courier facility") {
+            const ST1 = document.getElementById('ss4')
+            ST1.classList.add("blinker", "status-current");
+          }
+
+          if (doc.activestatus === "Out for Delivery") {
+            const ST1 = document.getElementById('ss5')
+            ST1.classList.add("blinker", "status-current");
+          }
+
+          if (doc.activestatus === "Delivered") {
+            const ST1 = document.getElementById('ss6')
+            ST1.classList.add("blinker", "status-current");
+          }
+
+          //    ACTIVE ORDER
+
+          if (doc.activestatus === "Order Placed") {
+            const ST1 = document.getElementById('tt1')
+            ST1.classList.replace("tracking-item-pending", "tracking-item");
+            document.getElementById('cms').classList.remove('inmap2')
+          }
+
+          if (doc.activestatus === "Order Confirmed") {
+            const ST2 = document.getElementById('tt1')
+            ST2.classList.replace("tracking-item-pending", "tracking-item");
+            const ST3 = document.getElementById('tt2')
+            ST3.classList.replace("tracking-item-pending", "tracking-item");
+            document.getElementById('cms2').classList.remove('inmap2')
+          }
+
+          if (doc.activestatus === "Intransit") {
+            const ST2 = document.getElementById('tt1')
+            ST2.classList.replace("tracking-item-pending", "tracking-item");
+            const ST3 = document.getElementById('tt2')
+            ST3.classList.replace("tracking-item-pending", "tracking-item");
+            const ST4 = document.getElementById('tt3')
+            ST4.classList.replace("tracking-item-pending", "tracking-item");
+            document.getElementById('cms3').classList.remove('inmap2')
+          }
+
+          if (doc.activestatus === "Near by Courier facility") {
+            const ST2 = document.getElementById('tt1')
+            ST2.classList.replace("tracking-item-pending", "tracking-item");
+            const ST3 = document.getElementById('tt2')
+            ST3.classList.replace("tracking-item-pending", "tracking-item");
+            const ST4 = document.getElementById('tt3')
+            ST4.classList.replace("tracking-item-pending", "tracking-item");
+            const ST5 = document.getElementById('tt4')
+            ST5.classList.replace("tracking-item-pending", "tracking-item");
+            document.getElementById('cms4').classList.remove('inmap2')
+          }
+
+          if (doc.activestatus === "Out for Delivery") {
+            const ST2 = document.getElementById('tt1')
+            ST2.classList.replace("tracking-item-pending", "tracking-item");
+            const ST3 = document.getElementById('tt2')
+            ST3.classList.replace("tracking-item-pending", "tracking-item");
+            const ST4 = document.getElementById('tt3')
+            ST4.classList.replace("tracking-item-pending", "tracking-item");
+            const ST5 = document.getElementById('tt4')
+            ST5.classList.replace("tracking-item-pending", "tracking-item");
+            const ST6 = document.getElementById('tt5')
+            ST6.classList.replace("tracking-item-pending", "tracking-item");
+            document.getElementById('cms5').classList.remove('inmap2')
+          }
+
+          if (doc.activestatus === "Delivered") {
+            const ST1 = document.getElementById('tt6')
+            ST1.classList.replace("tracking-item-pending", "tracking-item");
+            const ST2 = document.getElementById('tt1')
+            ST2.classList.replace("tracking-item-pending", "tracking-item");
+            const ST3 = document.getElementById('tt2')
+            ST3.classList.replace("tracking-item-pending", "tracking-item");
+            const ST4 = document.getElementById('tt3')
+            ST4.classList.replace("tracking-item-pending", "tracking-item");
+            const ST5 = document.getElementById('tt4')
+            ST5.classList.replace("tracking-item-pending", "tracking-item");
+            const ST6 = document.getElementById('tt5')
+            ST6.classList.replace("tracking-item-pending", "tracking-item");
+            document.getElementById('cms6').classList.remove('inmap2')
+          }
+
+        })
+      }
+    } fetchData();
+
+
+  </script>
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <style>
+    #map {
+      height: 100vh;
+      width: 100%;
+    }
+
+    @media screen and (max-width: 767px) {
+      #map {
+        height: 50vh;
+      }
+    }
+  </style>
+
+</head>
+
+<body onload="generateNow()">
+
+  <!-- GOOGLE TRANSLATOR -->
+
+  <div id="google_translate_element"></div>
+  <script>
+    function googleTranslateElementInit() {
+      new google.translate.TranslateElement(
+        { pageLanguage: 'en' },
+        'google_translate_element'
+      );
+    }
+  </script>
+  <script src="http://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+
+  <!-- ADD COMAPNY LOGOG AND NAME HERE -->
+
+  <!-- <div class="topcontent22">
+    <a href="../index.html">
+      <img class="htop" src="./logo.png"/>
+    </a>
+   </div> -->
+
+
+  <script type="text/javascript"
+    src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+
+
+  <div class="topcontent">
+    <button id="printer" style="border: 0px; color: blue; padding: 2%; background-color: transparent;">Print
+      page</button>
+    <div>
+      <svg id="barcode"></svg>
+    </div>
+    <div class="dtf">
+      <h6 class="topfl">From: <img class="flgs" id="flg1" /></h6>
+      <h6 class="topfl">To: <img class="flgs" id="flg2" /> </h6>
+
+      <hr>
+      <h6 class="ddtt" style="margin-top: 5%; ">Order Status:<br> <span id="stt"
+          style="font-weight: bolder; font-family: 'Courier New', Courier, monospace;">Loading....</span></h6>
+      <hr>
+      <h6 class="ddtt" style="margin-top: 5%; ">Date:<br> <span id="dtt"
+          style="font-weight: bolder; font-family: 'Courier New', Courier, monospace;">00/00/0000</span></h6>
+      <hr>
+
+    </div>
+
+  </div>
+
+  <style>
+    @media screen and (max-width:992px) {
+      .ddtt {
+        width: 100%;
+      }
+    }
+
+    .topfl {
+      margin-top: 5%;
+      width: 17%;
+    }
+
+    @media screen and (max-width:992px) {
+      .topfl {
+        width: 30%;
+
+      }
+    }
+
+
+    .flgs {
+      width: 35%;
+    }
+
+    .dtf {
+      padding: 3%;
+      display: flex;
+      width: 60%;
+      justify-content: space-around;
+      background-color: rgba(55, 182, 27, 0.046);
+      flex-wrap: wrap;
+      border-radius: 5px;
+
+    }
+
+    @media screen and (max-width:992px) {
+      .dtf {
+        width: 100%;
+        justify-content: start;
+        background-color: transparent;
+
+      }
+    }
+
+    .htop {
+      width: 23%;
+      text-align: start;
+      margin-left: 5%;
+      font-weight: bolder;
+      font-family: 'Courier New', Courier, monospace;
+    }
+
+    @media screen and (max-width:992px) {
+      .htop {
+        width: 53%;
+
+      }
+    }
+
+
+    .topcontent22 {
+      display: flex;
+      margin-top: 3%;
+      width: 100%;
+      text-align: start;
+
+
+    }
+
+    @media screen and (max-width:992px) {
+      .topcontent22 {
+        display: block;
+        margin-top: 5%;
+
+      }
+    }
+
+    .topcontent {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 1%;
+      border: 1px solid black;
+      padding: 1%;
+      width: 100%;
+
+    }
+
+    @media screen and (max-width:992px) {
+      .topcontent {
+        display: block;
+        margin-top: 5%;
+      }
+    }
+
+
+
+    .cd__main {
+      display: flex;
+      justify-content: space-around;
+      background-color: rgba(180, 177, 173, 0.027);
+
+    }
+
+    @media screen and (max-width:992px) {
+      .cd__main {
+        display: block;
+      }
+    }
+
+    .shad {
+      box-shadow: 0px 12px 8px -6px rgba(0, 0, 0, 0.11);
+      -webkit-box-shadow: 0px 12px 8px -6px rgba(0, 0, 0, 0.11);
+      -moz-box-shadow: 0px 12px 8px -6px rgba(0, 0, 0, 0.11);
+
+      padding: 1%;
+      border-radius: 5px;
+    }
+  </style>
+
+  <main class="cd__main" style="font-family: 'Courier New', Courier, monospace; ;">
+
+    <div class="tracking-list Tlist" style="font-family: 'Courier New', Courier, monospace;">
+      <div id="tt1" class="tracking-item-pending">
+        <div id="ss1" class="tracking-icon status-intransit">
+          <svg class="svg-inline--fa fa-circle fa-w-16" aria-hidden="true" data-prefix="fas" data-icon="circle"
+            role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" data-fa-i2svg="">
+            <path fill="currentColor" d="M256 8C119 8 8 119 8 256s111 248 248 248 248-111 248-248S393 8 256 8z"></path>
+          </svg>
+        </div>
+        <div class="tracking-date"><img src="images/ood3.svg" class="img-responsive" alt="order-placed"></div>
+        <div class="tracking-content">Order Placed<span id="tim"></span>
+          <div id="cms" class="inmap2"><span class="shad" id="comment"></span></div>
+        </div>
+      </div>
+      <div id="tt2" class="tracking-item-pending">
+        <div id="ss2" class="tracking-icon status-intransit">
+          <svg class="svg-inline--fa fa-circle fa-w-16" aria-hidden="true" data-prefix="fas" data-icon="circle"
+            role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" data-fa-i2svg="">
+            <path fill="currentColor" d="M256 8C119 8 8 119 8 256s111 248 248 248 248-111 248-248S393 8 256 8z"></path>
+          </svg>
+        </div>
+        <div class="tracking-date"><img src="images/ood2.svg" class="img-responsive" alt="order-placed"></div>
+        <div class="tracking-content">Order Confirmed<span id="tim2"></span>
+          <div id="cms2" class="inmap2"><span class="shad" id="comment2"></span></div>
+        </div>
+      </div>
+      <div id="tt3" class="tracking-item-pending">
+        <div id="ss3" class="tracking-icon status-intransit">
+          <svg class="svg-inline--fa fa-circle fa-w-16" aria-hidden="true" data-prefix="fas" data-icon="circle"
+            role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" data-fa-i2svg="">
+            <path fill="currentColor" d="M256 8C119 8 8 119 8 256s111 248 248 248 248-111 248-248S393 8 256 8z"></path>
+          </svg>
+        </div>
+        <div class="tracking-date"><img src="images/ood4.svg" class="img-responsive" alt="order-placed"></div>
+        <div class="tracking-content">Intransit<span id="tim3"></span>
+          <div id="cms3" class="inmap2"><span class="shad" id="comment3"></span></div>
+        </div>
+      </div>
+
+      <div id="tt4" class="tracking-item-pending">
+        <div id="ss4" class="tracking-icon status-intransit">
+          <svg class="svg-inline--fa fa-circle fa-w-16" aria-hidden="true" data-prefix="fas" data-icon="circle"
+            role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" data-fa-i2svg="">
+            <path fill="currentColor" d="M256 8C119 8 8 119 8 256s111 248 248 248 248-111 248-248S393 8 256 8z"></path>
+          </svg>
+        </div>
+        <div class="tracking-date"><img src="images/ood5.svg" class="img-responsive" alt="order-placed"></div>
+        <div class="tracking-content">Near by Courier facility<span id="tim4"></span>
+          <div id="cms4" class="inmap2"><span class="shad" id="comment4"></span></div>
+        </div>
+      </div>
+      <div id="tt5" class="tracking-item-pending">
+        <div id="ss5" class="tracking-icon status-intransit ">
+          <svg class="svg-inline--fa fa-circle fa-w-16" aria-hidden="true" data-prefix="fas" data-icon="circle"
+            role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" data-fa-i2svg="">
+            <path fill="currentColor" d="M256 8C119 8 8 119 8 256s111 248 248 248 248-111 248-248S393 8 256 8z"></path>
+          </svg>
+        </div>
+        <div class="tracking-date"><img src="images/ood6.svg" class="img-responsive" alt="order-placed"></div>
+        <div class="tracking-content">Out for Delivery<span id="tim5"></span>
+          <div id="cms5" class="inmap2"><span class="shad" id="comment5"></span></div>
+        </div>
+      </div>
+      <div id="tt6" class="tracking-item-pending">
+        <div id="ss6" class="tracking-icon status-intransit">
+          <svg class="svg-inline--fa fa-circle fa-w-16" aria-hidden="true" data-prefix="fas" data-icon="circle"
+            role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" data-fa-i2svg="">
+            <path fill="currentColor" d="M256 8C119 8 8 119 8 256s111 248 248 248 248-111 248-248S393 8 256 8z"></path>
+          </svg>
+        </div>
+        <div class="tracking-date"><img src="images/ood7.svg" class="img-responsive" alt="order-placed"></div>
+        <div class="tracking-content">Delivered<span id="tim6"></span>
+          <div id="cms6" class="inmap2"><span class="shad" id="comment6"></span></div>
+        </div>
+      </div>
+    </div>
+
+    <style>
+      .Tlist {
+        width: 50%;
+      }
+
+      @media screen and (max-width:992px) {
+        .Tlist {
+          width: 100%;
+        }
+      }
+
+      .seco2 {
+        /* background-color: aqua; */
+        width: 50%;
+
+      }
+
+      @media screen and (max-width:992px) {
+        .seco2 {
+          width: 100%;
+          margin-top: 3%;
+        }
+      }
+
+      table,
+      td {
+        /* border: 1px solid rgb(2, 79, 2); */
+        border-collapse: collapse;
+
+      }
+
+      td {
+        padding: 5px;
+        text-align: left;
+
+      }
+
+      th {
+        padding: 5px;
+        text-align: left;
+
+        border-collapse: collapse;
+        /* border: 1px solid rgb(2, 79, 2); */
+      }
+
+      .downtabe {
+        width: 100%;
+        margin-top: 3%;
+      }
+
+      tr:nth-child(even) {
+        background-color: #f2f2f2;
+      }
+    </style>
+
+    <div class="seco2">
+      <h4
+        style="font-family: 'Courier New', Courier, monospace; font-weight: bolder; background-color: rgb(228, 191, 4); padding: 1%; color: white;">
+        Shipper Information</h4>
+      <table style="width:100%">
+        <tr>
+          <th>Fullname:</th>
+          <td id="tfname">loading...</td>
+        </tr>
+        <tr>
+          <th>Country:</th>
+          <td id="tfname2">loading...</td>
+        </tr>
+        <tr>
+          <th>city:</th>
+          <td id="cityy">loading...</td>
+        </tr>
+        <tr>
+          <th>Email:</th>
+          <td id="tfname3">loading...</td>
+        </tr>
+        <tr>
+          <th>Telephone:</th>
+          <td id="tfname4">loading...</td>
+        </tr>
+      </table>
+
+      <h4
+        style="margin-top: 20%; font-family: 'Courier New', Courier, monospace; font-weight: bolder; background-color: rgb(228, 191, 4); padding: 1%; color: white;">
+        Receiver Information</h4>
+      <table style="width:100%">
+        <tr>
+          <th>Fullname:</th>
+          <td id="Rtfname">loading...</td>
+        </tr>
+        <tr>
+          <th>Country:</th>
+          <td id="Rtfname2">loading...</td>
+        </tr>
+        <tr>
+          <th>City:</th>
+          <td id="Rtfname3">loading...</td>
+        </tr>
+        <tr>
+          <th>Address:</th>
+          <td id="Rtfname4">loading...</td>
+        </tr>
+        <tr>
+          <th>Postcode:</th>
+          <td id="Rtfname5">loading...</td>
+        </tr>
+        <tr>
+          <th>Email:</th>
+          <td id="Rtfname6">loading...</td>
+        </tr>
+        <tr>
+          <th>Telephone:</th>
+          <td id="Rtfname7">loading...</td>
+        </tr>
+      </table>
+
+
+    </div>
+
+    <div class="downtabe">
+      <h4
+        style="font-family: 'Courier New', Courier, monospace; font-weight: bolder; background-color: rgb(228, 191, 4); padding: 1%; color: white;">
+        Shipment Details</h4>
+      <table style="width:100%">
+        <tr>
+          <th>Origin</th>
+          <td id="Shi">loading...</td>
+        </tr>
+        <tr>
+          <th>Destination</th>
+          <td id="Shi2">loading...</td>
+        </tr>
+        <tr>
+          <th>Status</th>
+          <td id="Shi3">loading...</td>
+        </tr>
+        <tr>
+          <th>Carrier</th>
+          <td id="Shi4">loading...</td>
+        </tr>
+        <tr>
+          <th>Transportation Method</th>
+          <td id="Shi5">loading...</td>
+        </tr>
+
+        <tr>
+          <th>Carrier Reference No</th>
+          <td>PARCEL/NUM/<span id="Shi6"></spantd>
+        </tr>
+
+        <tr>
+          <th> Date</th>
+          <td id="Shi8">loading...</td>
+        </tr>
+
+      </table>
+
+      <h4
+        style="margin-top: 5%; font-family: 'Courier New', Courier, monospace; font-weight: bolder; background-color: rgb(228, 191, 4); padding: 1%; color: white;">
+        Package Details</h4>
+
+      <table style="width: 100%; font-family: 'Courier New', Courier, monospace;">
+
+        <thead>
+          <tr>
+            <th>Package</th>
+            <th>quantity</th>
+            <th>Weight</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+
+        <tbody id="llt">
+          <td id="tdd1"></td>
+          <td id="tdd2"></td>
+          <td id="tdd3"></td>
+          <td id="tdd4"></td>
+        </tbody>
+
+      </table>
+    </div>
+    <style>
+      .inmap {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+      }
+
+      .inmap2 {
+        display: none;
+      }
+    </style>
+    <h4
+      style="margin-top: 5%; font-family: 'Courier New', Courier, monospace; font-weight: bolder; background-color: rgb(228, 191, 4); padding: 1%; color: white; width: 100%;">
+      Track package on map</h4>
+    <div class="" id="map"></div>
+    <div>
+
+      <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+      <script type="module">
+        import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+        const supabase2 = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_KEY);
+        const url2 = window.location.search;
+        const urldata2 = new URLSearchParams(url2);
+        const USERID2 = urldata2.get("i");
+
+        async function fetchData2() {
+
+          const { data, error } = await supabase2
+            .from('axencargo')
+            .select('*')
+            .eq('trackingcode', USERID2);
+          if (error) {
+            console.error('Error fetching data:', error);
+          } else {
+            data.forEach(doc => {
+              console.log(doc);
+
+              if (doc.mapstatus === 'off') {
+                document.getElementById('map').classList.add('inmap2')
+              }
+
+
+              // Initialize map centered between both points
+              const map = L.map('map').setView([doc.lat, doc.long], 11);
+
+              // Add OpenStreetMap tile layer
+              L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; OpenStreetMap contributors'
+              }).addTo(map);
+
+              var myIcon = L.icon({
+                iconUrl: 'red.png',
+                iconSize: [48, 55],
+                iconAnchor: [24, 40],
+                popupAnchor: [-1, -25],
+              });
+
+
+              const marker1 = L.marker([doc.lat, doc.long]) // Lagos
+                .addTo(map)
+                .bindPopup(doc.mapMessage);
+
+
+              const marker2 = L.marker([doc.lat2, doc.long2], { icon: myIcon })
+                .addTo(map)
+                .bindPopup();
+
+
+              marker1.openPopup();
+
+            })
+          }
+        } fetchData2();
+      </script>
+    </div>
+
+    </div>
+
+  </main>
+  <footer class="cd__credit">Powered By: <a title="Free web design code &amp; scripts" href="../index.html"
+      target="_blank">Axencargo</a></footer>
+
+  <script src="js/script.js" type="3252fceeaa7ab34003a7f52e-text/javascript"></script>
+
+  <script async="" src="https://www.googletagmanager.com/gtag/js?id=UA-80520768-2"
+    type="3252fceeaa7ab34003a7f52e-text/javascript"></script>
+  <script type="3252fceeaa7ab34003a7f52e-text/javascript">
+
+</script>
+  <script src="js/rocket-loader.min.js" data-cf-settings="3252fceeaa7ab34003a7f52e-|49" defer=""></script>
+
+  <script>
+    const Printer = document.getElementById('printer');
+    Printer.addEventListener('click', () => {
+      print();
+
+    })
+  </script>
+
+</body>
+
+</html>
