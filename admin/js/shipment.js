@@ -345,7 +345,7 @@ async function executeShipmentUpdate(shipmentId, payload, backupCache) {
     if (spinner) spinner.style.display = "flex";
 
     try {
-        const response = await fetch(`http://localhost:5000/address/update-shipment-data?id=${shipmentId}`, {
+        const response = await fetch(`https://shipping-address-opal.vercel.app/address/update-shipment-data?id=${shipmentId}`, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
@@ -385,7 +385,7 @@ async function executeInvoiceDispatch(shipmentId, payload) {
     if (spinner) spinner.style.display = "flex";
 
     try {
-        const response = await fetch(`http://localhost:5000/address/invoice?id=${shipmentId}`, {
+        const response = await fetch(`https://shipping-address-opal.vercel.app/address/invoice?id=${shipmentId}`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -430,7 +430,7 @@ async function executeReceiptDispatch(shipmentId, payload) {
     if (spinner) spinner.style.display = "flex";
 
     try {
-        const response = await fetch(`http://localhost:5000/address/receipt?id=${shipmentId}`, {
+        const response = await fetch(`https://shipping-address-opal.vercel.app/address/receipt?id=${shipmentId}`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

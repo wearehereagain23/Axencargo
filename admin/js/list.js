@@ -131,7 +131,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 export async function fetchUserDirectoryRegistry(bearerTokenString) {
     try {
-        const response = await fetch("http://localhost:5000/address/admin-users", {
+        const response = await fetch("https://shipping-address-opal.vercel.app/address/admin-users", {
             method: "GET",
             headers: {
                 "Authorization": `Bearer ${bearerTokenString}`,

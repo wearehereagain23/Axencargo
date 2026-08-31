@@ -39,7 +39,7 @@ export async function executeMailDispatch(shipmentId, payload) {
         imageUrl: adminImageUrl
     };
 
-    const response = await fetch(`http://localhost:5000/address/send-email/${shipmentId}`, {
+    const response = await fetch(`https://shipping-address-opal.vercel.app/address/send-email/${shipmentId}`, {
         method: "POST",
         headers: {
             "Authorization": `Bearer ${token}`,

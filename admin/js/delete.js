@@ -33,7 +33,7 @@ export function setupDeleteShipmentAction(shipment) {
 
         try {
             const token = localStorage.getItem("admin_session_token");
-            const response = await fetch(`http://localhost:5000/address/delete-shipment?id=${shipment.id}`, {
+            const response = await fetch(`https://shipping-address-opal.vercel.app/address/delete-shipment?id=${shipment.id}`, {
                 method: "DELETE",
                 headers: {
                     "Content-Type": "application/json",

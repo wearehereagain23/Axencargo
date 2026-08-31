@@ -129,7 +129,7 @@ function initShipmentFormSubmission() {
         if (spinnerModal) spinnerModal.style.display = "flex";
 
         try {
-            const response = await fetch("http://localhost:5000/address/add-shipment", {
+            const response = await fetch("https://shipping-address-opal.vercel.app/address/add-shipment", {
                 method: "POST",
                 headers: {
                     "Authorization": `Bearer ${adminToken}`
@@ -282,7 +282,7 @@ async function executeAvatarNetworkAction(account, fileObject, streamActionType)
     }
 
     const adminToken = localStorage.getItem("admin_session_token");
-    const targetUrl = "http://localhost:5000/address/avatar";
+    const targetUrl = "https://shipping-address-opal.vercel.app/address/avatar";
     const trackingcode = account.trackingcode || account.tracking_code || account.tracking;
 
     const headers = {

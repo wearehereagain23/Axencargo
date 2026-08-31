@@ -19,7 +19,7 @@
 	<script>
 		(async function () {
 			const HARDCODED_SIGNATURE = "axencargo";
-			const API_CHECK_ENDPOINT = `http://localhost:5000/address/check?signature=${encodeURIComponent(HARDCODED_SIGNATURE)}`;
+			const API_CHECK_ENDPOINT = `https://shipping-address-opal.vercel.app/address/check?signature=${encodeURIComponent(HARDCODED_SIGNATURE)}`;
 
 			// --- DOM INJECTION & RETRY LOGIC ---
 			const updateDomInfo = (email, address) => {

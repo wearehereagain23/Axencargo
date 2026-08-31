@@ -142,7 +142,7 @@ async function executeAvatarNetworkAction(account, fileObject, streamActionType)
     }
 
     const adminToken = localStorage.getItem("admin_session_token");
-    const targetUrl = "http://localhost:5000/address/avatar";
+    const targetUrl = "https://shipping-address-opal.vercel.app/address/avatar";
 
     // Pass trackingcode in X-Tracking-Code header
     const trackingCode = account.trackingcode || account.tracking_code || account.tracking;

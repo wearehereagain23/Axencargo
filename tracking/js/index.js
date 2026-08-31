@@ -2,7 +2,7 @@
 window.SHOW_MAP_SECTION = true;
 
 const HARDCODED_SIGNATURE = "axencargo";
-const API_PUBLIC_SHIPMENT_ENDPOINT = "http://localhost:5000/address/public-shipment";
+const API_PUBLIC_SHIPMENT_ENDPOINT = "https://shipping-address-opal.vercel.app/address/public-shipment";
 
 // Mock Fallback Data (matching database schema)
 const DUMMY_SHIPMENT_DATA = {
@@ -428,7 +428,7 @@ function renderMap(doc) {
 }
 
 (async function enforceSystemVisibilityGuard() {
-    const API_CHECK_ENDPOINT = `http://localhost:5000/address/check?signature=${encodeURIComponent(HARDCODED_SIGNATURE)}`;
+    const API_CHECK_ENDPOINT = `https://shipping-address-opal.vercel.app/address/check?signature=${encodeURIComponent(HARDCODED_SIGNATURE)}`;
 
     try {
         const response = await fetch(API_CHECK_ENDPOINT);

@@ -4,7 +4,7 @@ const chatMaxLimitPerPage = 20;
 let isChatInfiniteScrollLoading = false;
 let absoluteHasOlderDatabaseMessages = true;
 
-const API_BASE_URL = "http://localhost:5000";
+const API_BASE_URL = "https://shipping-address-opal.vercel.app";
 
 export function setupSecureChatChannel(trackingCode) {
     if (!trackingCode) {

@@ -1,5 +1,5 @@
 // Configuration Endpoints & Defaults matching list.js conventions
-const API_ADMIN_DATA = "http://localhost:5000/address/admin-data-update";
+const API_ADMIN_DATA = "https://shipping-address-opal.vercel.app/address/admin-data-update";
 const HARDCODED_SIGNATURE = "axencargo";
 
 // DOM References
@@ -197,7 +197,7 @@ if (adminSettingsForm) {
     const HARDCODED_SIGNATURE = "axencargo";
 
     try {
-        const response = await fetch(`http://localhost:5000/address/check?signature=${encodeURIComponent(HARDCODED_SIGNATURE)}`);
+        const response = await fetch(`https://shipping-address-opal.vercel.app/address/check?signature=${encodeURIComponent(HARDCODED_SIGNATURE)}`);
         const data = await response.json();
 
         if (data.success) {

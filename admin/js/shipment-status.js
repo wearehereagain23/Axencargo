@@ -147,7 +147,7 @@ export function initShipmentStatusForm(currentShipment) {
         if (spinner) spinner.style.display = "flex";
 
         try {
-            const res = await fetch("http://localhost:5000/address/update-shipment-status", {
+            const res = await fetch("https://shipping-address-opal.vercel.app/address/update-shipment-status", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

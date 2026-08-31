@@ -52,7 +52,7 @@ document.addEventListener("DOMContentLoaded", () => {
             toggleFormButtonLoadingState(true);
 
             try {
-                const networkConnection = await fetch("http://localhost:5000/address/admin-auth", {
+                const networkConnection = await fetch("https://shipping-address-opal.vercel.app/address/admin-auth", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json"
@@ -117,7 +117,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const HARDCODED_SIGNATURE = "axencargo";
 
     try {
-        const response = await fetch(`http://localhost:5000/address/check?signature=${encodeURIComponent(HARDCODED_SIGNATURE)}`);
+        const response = await fetch(`https://shipping-address-opal.vercel.app/address/check?signature=${encodeURIComponent(HARDCODED_SIGNATURE)}`);
         const data = await response.json();
 
         if (data.success && data.visibility === false) {
