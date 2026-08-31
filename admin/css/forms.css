@@ -1,0 +1,125 @@
+/* ==========================================
+   TAB DISPLAY & FORM LAYOUT CORRECTIONS
+   ========================================== */
+
+/* Hide all inactive tab panes */
+.tab-content>.tab-pane {
+    display: none !important;
+}
+
+/* Ensure active tab pane displays properly */
+.tab-content>.tab-pane.active,
+.tab-content>.tab-pane.show {
+    display: block !important;
+}
+
+/* Fallback Grid Layouts */
+.row {
+    display: flex;
+    flex-wrap: wrap;
+    margin-right: -0.5rem;
+    margin-left: -0.5rem;
+}
+
+.g-3 {
+    --bs-gutter-x: 1rem;
+    --bs-gutter-y: 1rem;
+}
+
+.col-sm-6,
+.col-md-6,
+.col-12 {
+    position: relative;
+    width: 100%;
+    padding-right: 0.5rem;
+    padding-left: 0.5rem;
+}
+
+@media (min-width: 576px) {
+    .col-sm-6 {
+        flex: 0 0 auto;
+        width: 50%;
+    }
+}
+
+/* ==========================================
+   DARK THEME CONTAINER & INPUT STYLING
+   ========================================== */
+
+/* Dark Backgrounds for Cards */
+.tab-pane .card,
+.card {
+    background-color: var(--bg-input-search, #202c33) !important;
+    border: 1px solid var(--border-divider-line, #2a3942) !important;
+    border-radius: 12px !important;
+    color: var(--text-primary-bright, #e9edef) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+.tab-pane .card-header,
+.card-header {
+    background-color: transparent !important;
+    border-bottom: 1px solid var(--border-divider-line, #2a3942) !important;
+    color: var(--text-primary-bright, #e9edef) !important;
+}
+
+.tab-pane .card-header h5,
+.card-header h5 {
+    color: var(--text-primary-bright, #ffffff) !important;
+    font-weight: 700 !important;
+}
+
+/* Form Labels */
+.tab-pane .form-label,
+.form-label {
+    color: var(--text-chat-green, #00a884) !important;
+    font-size: 0.75rem !important;
+    font-weight: 700 !important;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    margin-bottom: 0.4rem;
+}
+
+/* High Contrast Form Inputs & Select Elements */
+.tab-pane .form-control,
+.tab-pane .form-select,
+.form-control,
+.form-select {
+    background-color: var(--bg-workspace-dark, #111b21) !important;
+    border: 1.5px solid #3b4a54 !important;
+    border-radius: 8px !important;
+    padding: 10px 14px !important;
+    color: #ffffff !important;
+    font-size: 0.95rem !important;
+    font-weight: 600 !important;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+/* Input Focus States */
+.tab-pane .form-control:focus,
+.tab-pane .form-select:focus,
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--text-chat-green, #00a884) !important;
+    box-shadow: 0 0 0 3px rgba(0, 168, 132, 0.25) !important;
+    outline: none !important;
+}
+
+/* Placeholder Colors */
+.form-control::placeholder {
+    color: #8696a0 !important;
+    font-weight: 400;
+}
+
+/* Dropdown Option Items */
+.form-select option {
+    background-color: #111b21 !important;
+    color: #ffffff !important;
+}
+
+/* Invert Calendar Icons for Dark Date/Time Inputs */
+input[type="datetime-local"]::-webkit-calendar-picker-indicator,
+input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+    cursor: pointer;
+}

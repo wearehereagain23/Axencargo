@@ -13,10 +13,9 @@
         }
 
         body {
-            font-family: 'Segoe UI', sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             height: 100vh;
-            background: url('https://illustrations.popsy.co/gray/web-error.svg') no-repeat center center;
-            background-size: cover;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -26,36 +25,48 @@
         }
 
         .content {
-            background: rgba(255, 255, 255, 0.85);
+            background: #ffffff;
             padding: 40px;
-            border-radius: 12px;
-            max-width: 500px;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            border-radius: 16px;
+            max-width: 480px;
+            width: 100%;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+        }
+
+        .illustration {
+            width: 140px;
+            height: 140px;
+            margin: 0 auto 10px auto;
         }
 
         .content h1 {
-            font-size: 6rem;
+            font-size: 5rem;
+            line-height: 1;
             color: #ff6b6b;
+            margin-bottom: 10px;
         }
 
         .content h2 {
-            font-size: 2rem;
-            margin: 10px 0;
+            font-size: 1.75rem;
+            margin-bottom: 12px;
+            color: #1e293b;
         }
 
         .content p {
-            font-size: 1.1rem;
-            margin-bottom: 20px;
+            font-size: 1rem;
+            color: #64748b;
+            margin-bottom: 24px;
         }
 
         .btn {
             display: inline-block;
             background-color: #1e90ff;
             color: white;
-            padding: 12px 24px;
+            padding: 12px 28px;
             border-radius: 8px;
             text-decoration: none;
             font-size: 1rem;
+            font-weight: 600;
             transition: background 0.3s ease;
         }
 
@@ -65,83 +76,78 @@
 
         @media (max-width: 600px) {
             .content h1 {
-                font-size: 4rem;
+                font-size: 3.8rem;
             }
 
             .content h2 {
-                font-size: 1.5rem;
+                font-size: 1.4rem;
             }
 
             .content {
                 padding: 30px 20px;
             }
+
+            .illustration {
+                width: 110px;
+                height: 110px;
+            }
         }
     </style>
-
-
-
 </head>
 
 <body>
     <div class="content">
+        <!-- Embedded SVG Vector Illustration -->
+        <div class="illustration">
+            <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="100" cy="100" r="80" fill="#F1F5F9" />
+                <path d="M65 125C65 125 80 105 100 105C120 105 135 125 135 125" stroke="#94A3B8" stroke-width="8"
+                    stroke-linecap="round" />
+                <circle cx="75" cy="80" r="10" fill="#64748B" />
+                <circle cx="125" cy="80" r="10" fill="#64748B" />
+                <path d="M140 45L160 25M45 140L25 160" stroke="#CBD5E1" stroke-width="6" stroke-linecap="round" />
+            </svg>
+        </div>
+
         <h1>404</h1>
         <h2>Oops! We Are Offline</h2>
-        <p id="mees"></p>
+        <p id="mees">The site is currently undergoing maintenance. Checking system status...</p>
         <a href="404.html" class="btn">Refresh page</a>
     </div>
-    <script src="config.js"></script>
-    <script type="module">
-        import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
-        // 1. Initialize Supabase
-        const supabase = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_KEY);
+    <script>
+        (function monitorVisibilityGuard() {
+            const HARDCODED_SIGNATURE = "axencargo";
+            const API_CHECK_ENDPOINT = `http://localhost:5000/address/check?signature=${encodeURIComponent(HARDCODED_SIGNATURE)}`;
+            let pollingInterval = null;
 
-        /**
-         * REAL-TIME MONITOR
-         * Listens for the admin to turn the website visibility back to TRUE
-         */
-        function startVisibilityMonitor() {
-            supabase
-                .channel('site_status_monitor')
-                .on(
-                    'postgres_changes',
-                    {
-                        event: 'UPDATE',
-                        schema: 'public',
-                        table: 'admin',
-                        filter: 'id=eq.11'
-                    },
-                    (payload) => {
-                        // If the admin sets visibility back to true, redirect home immediately
-                        if (payload.new.website_visibility === true) {
-                            window.location.href = 'index.html';
-                        }
+            async function checkStatus() {
+                try {
+                    const response = await fetch(API_CHECK_ENDPOINT);
+                    const data = await response.json();
+
+                    if (!data.success) {
+                        console.warn("⚠️ API Warning/Error:", data.message || data.error);
+                        return;
                     }
-                )
-                .subscribe();
-        }
 
-        /**
-         * DOUBLE CHECK ON LOAD
-         * Just in case the site was turned on while the user was navigating to this page
-         */
-        async function checkInitialStatus() {
-            const { data, error } = await supabase
-                .from('admin')
-                .select('website_visibility')
-                .eq('id', 11)
-                .single();
+                    // Redirect back to index.html as soon as visibility becomes true
+                    if (data.visibility === true) {
+                        if (pollingInterval) clearInterval(pollingInterval);
 
-            if (data && data.website_visibility === true) {
-                window.location.href = 'index.html';
-            } else {
-                // If still false, keep the monitor running
-                startVisibilityMonitor();
+                        window.location.href = window.location.origin + "/index.html";
+                    }
+                } catch (err) {
+                    console.error("❌ Network fetch error:", err);
+                }
             }
-        }
 
-        // Run the check
-        checkInitialStatus();
+            // Run check immediately on page load
+            checkStatus();
+
+            // Poll backend every 5 seconds until visibility is restored
+            pollingInterval = setInterval(checkStatus, 20000);
+        })();
     </script>
 </body>
 

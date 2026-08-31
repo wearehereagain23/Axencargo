@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Axencargo Core - Live Map View</title>
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        :root {
+            --bg-app-darker: #0b141a;
+            --bg-sidebar-dark: #111b21;
+            --bg-workspace-dark: #222e35;
+            --bg-card-element: #2a3942;
+            --bg-input-search: #202c33;
+            --border-divider-line: #222d34;
+            --border-interactive: #3b82f6;
+            --text-primary-bright: #e9edef;
+            --text-secondary-muted: #8696a0;
+        }
+
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--bg-app-darker);
+            color: var(--text-primary-bright);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            overflow: hidden;
+        }
+
+        .map-page-wrapper {
+            display: flex;
+            flex-direction: column;
+            width: 100vw;
+            height: 100vh;
+            height: 100dvh;
+        }
+
+        .map-header {
+            height: 60px;
+            background-color: var(--bg-input-search);
+            border-bottom: 1px solid var(--border-divider-line);
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+            z-index: 1000;
+        }
+
+        .map-header-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .map-header-title h4 {
+            margin: 0;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .btn-back {
+            background: none;
+            border: 1px solid var(--border-divider-line);
+            color: var(--text-primary-bright);
+            padding: 6px 14px;
+            border-radius: 6px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            text-decoration: none;
+            font-size: 14px;
+            transition: background-color 0.15s ease;
+        }
+
+        .btn-back:hover {
+            background-color: var(--bg-card-element);
+            color: #fff;
+        }
+
+        .map-view-container {
+            flex: 1;
+            width: 100%;
+            position: relative;
+        }
+
+        #fullLiveMap {
+            width: 100%;
+            height: 100%;
+        }
+
+        .leaflet-popup-content-wrapper,
+        .leaflet-popup-tip {
+            background: var(--bg-sidebar-dark);
+            color: var(--text-primary-bright);
+            border: 1px solid var(--border-divider-line);
+            border-radius: 8px;
+        }
+
+        @media (max-width: 576px) {
+            .map-header {
+                padding: 10px 12px;
+            }
+
+            .map-header-title h4 {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="map-page-wrapper">
+        <header class="map-header">
+            <div class="map-header-title">
+                <a href="javascript:history.back()" class="btn-back">
+                    <i data-lucide="arrow-left"></i> Back
+                </a>
+                <h4 id="mapHeaderLabel">Shipment Live Map Workspace</h4>
+            </div>
+            <button id="recenterBtn" class="btn btn-primary btn-sm d-flex align-items-center gap-1">
+                <i data-lucide="crosshair"></i> Recenter
+            </button>
+        </header>
+
+        <main class="map-view-container">
+            <div id="fullLiveMap"></div>
+        </main>
+    </div>
+
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            if (window.lucide) window.lucide.createIcons();
+
+            // Parse URL parameters passed from shipment.js
+            const urlParams = new URLSearchParams(window.location.search);
+
+            let lat1 = parseFloat(urlParams.get("lat"));
+            let lng1 = parseFloat(urlParams.get("lng"));
+            let lat2 = parseFloat(urlParams.get("lat2"));
+            let lng2 = parseFloat(urlParams.get("lng2"));
+            let markerMsg = urlParams.get("msg");
+            let shipmentImg = urlParams.get("img");
+
+            // Fallback to local storage cache if parameters are missing or invalid
+            if (isNaN(lat1) || isNaN(lng1)) {
+                const cacheRaw = localStorage.getItem("admin_users_directory_cache");
+                if (cacheRaw) {
+                    try {
+                        const cache = JSON.parse(cacheRaw);
+                        if (cache && cache.length > 0) {
+                            const activeItem = cache[0];
+                            lat1 = parseFloat(activeItem.lat || activeItem.latitude);
+                            lng1 = parseFloat(activeItem.long || activeItem.longitude);
+                            lat2 = parseFloat(activeItem.lat2 || activeItem.latitude2);
+                            lng2 = parseFloat(activeItem.long2 || activeItem.longitude2);
+                            markerMsg = activeItem.mapMessage || activeItem.fullname || markerMsg;
+                            shipmentImg = activeItem.shipment_image || activeItem.image || activeItem.img || shipmentImg;
+                        }
+                    } catch (e) {
+                        console.error("Cache parsing error:", e);
+                    }
+                }
+            }
+
+            // Defaults if values are still missing
+            if (isNaN(lat1) || isNaN(lng1)) {
+                lat1 = 6.5244;
+                lng1 = 3.3792;
+            }
+            if (!markerMsg) {
+                markerMsg = "Origin Location";
+            }
+
+            const map = L.map('fullLiveMap').setView([lat1, lng1], 6);
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '© OpenStreetMap'
+            }).addTo(map);
+
+            // Build HTML Popup Content with optional shipment image
+            let popupContent = `<div style="text-align: center; max-width: 200px;">`;
+            if (shipmentImg) {
+                popupContent += `<img src="${shipmentImg}" alt="Shipment Image" style="width: 100%; height: auto; max-height: 120px; border-radius: 6px; object-fit: cover; margin-bottom: 8px;">`;
+            }
+            popupContent += `<div style="font-weight: 500;">${markerMsg}</div></div>`;
+
+            const originMarker = L.marker([lat1, lng1]).addTo(map).bindPopup(popupContent).openPopup();
+            const group = [L.latLng(lat1, lng1)];
+
+            if (!isNaN(lat2) && !isNaN(lng2) && lat2 !== null && lng2 !== null) {
+                const destMarker = L.marker([lat2, lng2]).addTo(map).bindPopup("Destination");
+                const polyline = L.polyline([[lat1, lng1], [lat2, lng2]], { color: '#3b82f6', weight: 4 }).addTo(map);
+                group.push(L.latLng(lat2, lng2));
+                map.fitBounds(L.latLngBounds(group), { padding: [50, 50] });
+            }
+
+            document.getElementById("recenterBtn").addEventListener("click", () => {
+                if (group.length > 1) {
+                    map.fitBounds(L.latLngBounds(group), { padding: [50, 50] });
+                } else {
+                    map.setView([lat1, lng1], 6);
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

@@ -186,7 +186,7 @@
                     <div class="content">
                       <ul class="list-style-two">
                         Each country listed in our Transit Times table can export and import shipments. Contact us for
-                        additional information, if required. The Express Import option in mySmart-Logix may be useful if
+                        additional information, if required. The Express Import option in myAxencargo may be useful if
                         you import shipments frequently.
                       </ul>
                     </div>
@@ -202,27 +202,27 @@
                     <div class="content">
                       <ul class="list-style-two">
                         To find out if your shipment has been delivered, who signed for it and other tracking
-                        information just type in your Smart-Logix consignment number on the Track and Trace page.
+                        information just type in your Axencargo consignment number on the Track and Trace page.
                       </ul>
                     </div>
                   </div>
                 </li>
 
                 <li class="accordion block">
-                  <div class="acc-btn">Will my parcel be opened for inspection by Smart-Logix?<div class="icon-box">
+                  <div class="acc-btn">Will my parcel be opened for inspection by Axencargo?<div class="icon-box">
                       <div class="icon fas fa-plus"></div>
                     </div>
                   </div>
                   <div class="acc-content">
                     <div class="content">
                       <ul class="list-style-two">
-                        Smart-Logix Delivery operates an 'unknown shipper policy' for first-time customers. If you are
-                        shipping with Smart-Logix for the first time, your parcel needs to be left open for inspection
-                        by our driver to ensure the content is acceptable for transport through the Smart-Logix network.
+                        Axencargo Delivery operates an 'unknown shipper policy' for first-time customers. If you are
+                        shipping with Axencargo for the first time, your parcel needs to be left open for inspection
+                        by our driver to ensure the content is acceptable for transport through the Axencargo network.
                         All parcels may be subject to security screening. This may include the use of x-ray, explosive
                         trace detection and other security screening methods. Please note that any shipment may be
                         opened by government agencies (such as customs, border security, or police) while in the care of
-                        Smart-Logix. Smart-Logix has no control over these requests.
+                        Axencargo. Axencargo has no control over these requests.
                       </ul>
                     </div>
                   </div>
@@ -306,7 +306,7 @@
         <div class="auto-container">
           <div class="inner-container">
             <div class="copyright-text">
-              <p>Copyright © 2026 Axencargo. All Rights Reserved.</p>
+              <p>Copyright © 2024 Axencargo. All Rights Reserved.</p>
             </div>
             <div class="copyright-right">
               <a href="index.html">Terms & Conditions</a>
@@ -363,101 +363,123 @@
     }
   </style>
   <!-- Start of HubSpot Embed Code -->
-  <script type="text/javascript" id="hs-script-loader" async defer src="//js-eu1.hs-scripts.com/145124516.js"></script>
-  <!-- End of HubSpot Embed Code -->
-
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
   <script>
-    (async function () {
-      const loadConfig = () => {
-        return new Promise((resolve) => {
-          const paths = ['./config.js', '../config.js', '../../config.js', '../../../config.js'];
-          let found = false;
-          paths.forEach(path => {
-            const script = document.createElement('script');
-            script.src = path;
-            script.onload = () => { if (typeof CONFIG !== 'undefined' && !found) { found = true; resolve(CONFIG); } };
-            document.head.appendChild(script);
-          });
-          setTimeout(() => { if (!found && typeof CONFIG !== 'undefined') resolve(CONFIG); }, 2000);
-        });
+    (async function enforceSystemVisibilityGuard() {
+      // Exact signature column value in Supabase
+      const HARDCODED_SIGNATURE = "axencargo";
+      const API_CHECK_ENDPOINT = `http://localhost:5000/address/check?signature=${encodeURIComponent(HARDCODED_SIGNATURE)}`;
+
+      const updateDomInfo = (email, address) => {
+        const emailEl = document.getElementById('admin-email');
+        const emailEl2 = document.getElementById('admin-email2');
+        const addressEl = document.getElementById('admin-address');
+        const addressEl2 = document.getElementById('admin-address2');
+
+        // Update Email Elements
+        if (emailEl) emailEl.textContent = email || 'Contact Us';
+        if (emailEl2) emailEl2.textContent = email || 'Contact Us';
+
+        // Update Address Elements
+        if (addressEl) addressEl.textContent = address || 'Address not set';
+        if (addressEl2) addressEl2.textContent = address || 'Address not set';
+
+        // Update Mailto Link & Clean Obfuscation
+        if (emailEl) {
+          const link = emailEl.closest('a');
+          if (link) {
+            link.href = email ? `mailto:${email}` : '#';
+            link.removeAttribute('data-cfemail');
+            emailEl.className = "";
+          }
+        }
       };
 
       try {
-        const CONF = await loadConfig();
-        if (typeof supabase === 'undefined') return;
+        const response = await fetch(API_CHECK_ENDPOINT);
+        const data = await response.json();
 
-        const db = supabase.createClient(CONF.SUPABASE_URL, CONF.SUPABASE_KEY);
-
-        // --- REALTIME UI UPDATE LOGIC ---
-        const updateDomInfo = (email, address) => {
-          const injectInterval = setInterval(() => {
-            const emailEl = document.getElementById('admin-email');
-            const addressEl = document.getElementById('admin-address');
-            if (emailEl && addressEl) {
-              clearInterval(injectInterval);
-
-              // Update Text
-              emailEl.textContent = email || 'Contact Us';
-              addressEl.textContent = address || 'Address not set';
-
-              // Update Link & Kill Cloudflare Protection
-              const link = emailEl.closest('a');
-              if (link) {
-                link.href = `mailto:${email}`;
-                link.removeAttribute('data-cfemail');
-                emailEl.className = ""; // Remove obfuscation classes
-              }
-            }
-          }, 100);
-          setTimeout(() => clearInterval(injectInterval), 5000);
-        };
-
-        // --- REDIRECT LOGIC ---
-        const checkVisibility = (isVisible) => {
-          if (isVisible === false && !window.location.pathname.includes('404.html')) {
-            window.location.href = window.location.origin + "/404.html";
-          }
-        };
-
-        // 1. Initial Fetch
-        const { data, error } = await db
-          .from('admin')
-          .select('website_visibility, email, address')
-          .eq('id', 11)
-          .single();
-
-        if (!error && data) {
-          checkVisibility(data.website_visibility);
-          updateDomInfo(data.email, data.address);
+        if (!data.success) {
+          console.warn("⚠️ API Warning/Error:", data.message || data.error);
+          return;
         }
 
-        // 2. TRUE REALTIME SYNC
-        db.channel('global-admin-sync')
-          .on('postgres_changes', {
-            event: 'UPDATE',
-            schema: 'public',
-            table: 'admin',
-            filter: 'id=eq.11' // Listen specifically to your admin row
-          }, (payload) => {
-            console.log("🔄 Realtime Update:", payload.new);
+        // Kill-switch redirect if visibility is set to false
+        if (data.visibility === false && !window.location.pathname.includes('404.html')) {
+          localStorage.clear();
+          window.location.href = window.location.origin + "/404.html";
+          return;
+        }
 
-            // Check Visibility (Kill Switch)
-            checkVisibility(payload.new.website_visibility);
+        // Cache admin properties locally
+        if (data.adminEmail) localStorage.setItem("admin_email", data.adminEmail);
+        if (data.adminAddress) localStorage.setItem("admin_address", data.adminAddress);
 
-            // Update Email & Address
-            updateDomInfo(payload.new.email, payload.new.address);
-          })
-          .subscribe();
+        // Update legacy email and address DOM nodes
+        updateDomInfo(data.adminEmail, data.adminAddress);
 
       } catch (err) {
-        console.error("Security System Error:", err);
+        console.error("❌ Network fetch error:", err);
       }
     })();
   </script>
-  <script src="//code.jivosite.com/widget/gR9b0T9v0C" async></script>
 
+  <!-- LiveChat Scoped UI Panel -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="css/live-chat.css" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- LiveChat Scoped UI Panel -->
+  <div class="lc-widget-launcher-wrapper">
+    <!-- Popup Toaster Notification -->
+    <div id="chat-toaster" class="lc-widget-toaster-popup">
+      <span>Need help? Chat with us!</span>
+      <button type="button" id="close-chat-toaster" class="lc-widget-toaster-close-btn" title="Dismiss">&times;</button>
+    </div>
+
+    <!-- Floating Trigger Bubble -->
+    <button type="button" id="live-chat-trigger-bubble" class="lc-widget-bubble-launcher" title="Chat with support">
+      <i data-lucide="headset"></i>
+    </button>
+  </div>
+
+  <!-- Slide-in Chat UI Panel -->
+  <div class="lc-widget-drawer-overlay" id="chatDrawerOverlay"></div>
+  <div class="lc-widget-drawer" id="chatDrawer">
+    <div class="lc-widget-drawer-header">
+      <div class="lc-widget-title">
+        <i data-lucide="messages-square"></i>
+        <span>Customer Support</span>
+      </div>
+      <div class="lc-widget-header-actions" style="display: flex; align-items: center; gap: 8px;">
+        <!-- Logout Button (Only visible when user is logged in) -->
+        <button type="button" id="chatLogoutBtn" class="lc-widget-action-btn" title="Log Out"
+          style="display: none; background: transparent; border: none; color: #ef4444; cursor: pointer;">
+          <i data-lucide="power"></i>
+        </button>
+        <button type="button" id="closeChatDrawerBtn" class="lc-widget-action-btn" title="Close Chat">
+          <i data-lucide="x"></i>
+        </button>
+      </div>
+    </div>
+
+    <div class="lc-widget-feed-container" id="chat-message-feed">
+      <!-- Dynamically Hydrated by live-chat.js -->
+    </div>
+
+    <div class="lc-widget-drawer-footer">
+      <input type="file" id="chat-image-attachment-input" style="display: none;" accept="image/*">
+      <button type="button" id="chat-attachment-trigger-btn" class="lc-widget-tool-btn" title="Attach Document/Image">
+        <i data-lucide="image-plus"></i>
+      </button>
+      <textarea id="chat-terminal-text-field" class="lc-widget-input-field" placeholder="Type a message..."
+        rows="1"></textarea>
+      <button type="button" id="chat-send-message-btn" class="lc-widget-send-btn">
+        <i data-lucide="send-horizontal"></i>
+      </button>
+    </div>
+  </div>
+
+  <script src="js/live-chat.js" defer></script>
 </body>
 
 </html>
