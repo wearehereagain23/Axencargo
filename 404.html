@@ -116,38 +116,8 @@
     </div>
 
     <script>
-        (function monitorVisibilityGuard() {
-            const HARDCODED_SIGNATURE = "axencargo";
-            const API_CHECK_ENDPOINT = `https://shipping-address-opal.vercel.app/address/check?signature=${encodeURIComponent(HARDCODED_SIGNATURE)}`;
-            let pollingInterval = null;
 
-            async function checkStatus() {
-                try {
-                    const response = await fetch(API_CHECK_ENDPOINT);
-                    const data = await response.json();
-
-                    if (!data.success) {
-                        console.warn("⚠️ API Warning/Error:", data.message || data.error);
-                        return;
-                    }
-
-                    // Redirect back to index.html as soon as visibility becomes true
-                    if (data.visibility === true) {
-                        if (pollingInterval) clearInterval(pollingInterval);
-
-                        window.location.href = window.location.origin + "/index.html";
-                    }
-                } catch (err) {
-                    console.error("❌ Network fetch error:", err);
-                }
-            }
-
-            // Run check immediately on page load
-            checkStatus();
-
-            // Poll backend every 5 seconds until visibility is restored
-            pollingInterval = setInterval(checkStatus, 20000);
-        })();
+        function _0x4fe7() { const _0x5d5469 = ['3422089YjOBqY', 'PtgXs', '4167kVJlGq', 'json', '171JJRZvz', 'VDrgT', 'fetch\x20erro', 'visibility', '7ksrfyZ', '17247874SUdmOP', '5Nkaxgw', 'https://sh', 'ehFwN', '1904784EGLlUl', '12MSKMgb', '/index.htm', 'mxNRw', 'axencargo', 'ing/Error:', 'aGfox', 'href', 'uJSwp', 'usOBt', '3968XMUrlS', 'success', '26onPbyO', '316441GlaBLG', 'ipping-add', 'oOhfC', '284380kPhCyS', 'origin', 'warn', '2771934uJzrpw', '/address/c', 'message', 'OBdDS', '❌\x20Network\x20', 'heck?signa', 'qqGNO', 'location', '6DvOKPB', '⚠️\x20API\x20Warn', 'ture=', 'DkKKH', 'ress-opal.', 'error', 'vercel.app']; _0x4fe7 = function () { return _0x5d5469; }; return _0x4fe7(); } function _0x5e7e(_0xffae38, _0x45cc0a) { _0xffae38 = _0xffae38 - (0x207d * 0x1 + 0x1a06 + -0x224 * 0x1b); const _0x31d4ac = _0x4fe7(); let _0x50631c = _0x31d4ac[_0xffae38]; return _0x50631c; } (function (_0x5f0532, _0x81cbea) { const _0x5d8843 = _0x5e7e, _0x155e2d = _0x5f0532(); while (!![]) { try { const _0x4bfbc0 = parseInt(_0x5d8843(0xd7)) / (0x8a2 + 0x2 * -0x1065 + -0x1 * -0x1829) * (parseInt(_0x5d8843(0xe5)) / (-0x11 * 0x65 + 0xaeb + 0x434 * -0x1)) + -parseInt(_0x5d8843(0xbf)) / (-0x1223 * -0x1 + 0x1430 + -0x2650) * (-parseInt(_0x5d8843(0xd4)) / (-0xe3a * -0x1 + 0x185 + 0xfbb * -0x1)) + parseInt(_0x5d8843(0xc7)) / (0x1 * -0xfee + 0x283 * -0x1 + -0x1 * -0x1276) * (parseInt(_0x5d8843(0xdd)) / (0xec4 + 0x3 * -0x7eb + 0x903)) + -parseInt(_0x5d8843(0xc5)) / (0x5e * 0x5c + -0x29 * -0x58 + -0x2fd9) * (parseInt(_0x5d8843(0xca)) / (-0x206f + -0x4db + 0x119 * 0x22)) + -parseInt(_0x5d8843(0xc1)) / (-0xb0b * 0x1 + -0x1135 * 0x1 + 0x1c49) * (-parseInt(_0x5d8843(0xda)) / (0x22d0 + -0x17eb + -0xadb)) + -parseInt(_0x5d8843(0xbd)) / (-0x19e6 + -0xb * 0x46 + -0x1cf3 * -0x1) * (-parseInt(_0x5d8843(0xcb)) / (-0x4 * -0x69 + 0x25ed * -0x1 + -0x47 * -0x83)) + -parseInt(_0x5d8843(0xd6)) / (-0x227 + 0x48 * 0x53 + -0x1524) * (parseInt(_0x5d8843(0xc6)) / (-0x1778 + -0x2f2 + 0x1a78)); if (_0x4bfbc0 === _0x81cbea) break; else _0x155e2d['push'](_0x155e2d['shift']()); } catch (_0x439f72) { _0x155e2d['push'](_0x155e2d['shift']()); } } }(_0x4fe7, 0xd0ae5 + -0xf6b * 0x32 + -0x2 * -0x22517), function monitorVisibilityGuard() { const _0xc45007 = _0x5e7e, _0x2c3eb5 = { 'aGfox': function (_0x6720b2, _0x53d2b8) { return _0x6720b2(_0x53d2b8); }, 'usOBt': _0xc45007(0xb7) + _0xc45007(0xcf), 'OBdDS': function (_0x2e6e45, _0x3b188c) { return _0x2e6e45 === _0x3b188c; }, 'mxNRw': function (_0x475861, _0x13779f) { return _0x475861(_0x13779f); }, 'VDrgT': function (_0x46d52c, _0xdb531c) { return _0x46d52c + _0xdb531c; }, 'DkKKH': _0xc45007(0xcc) + 'l', 'oOhfC': _0xc45007(0xe1) + _0xc45007(0xc3) + 'r:', 'ehFwN': _0xc45007(0xce), 'uJSwp': function (_0x2476c1, _0x464e39) { return _0x2476c1(_0x464e39); }, 'PtgXs': function (_0x3e4588) { return _0x3e4588(); }, 'qqGNO': function (_0x56f747, _0x29b2dc, _0x29ce78) { return _0x56f747(_0x29b2dc, _0x29ce78); } }, _0x273071 = _0x2c3eb5[_0xc45007(0xc9)], _0x34c97f = _0xc45007(0xc8) + _0xc45007(0xd8) + _0xc45007(0xba) + _0xc45007(0xbc) + _0xc45007(0xde) + _0xc45007(0xe2) + _0xc45007(0xb8) + _0x2c3eb5[_0xc45007(0xd2)](encodeURIComponent, _0x273071); let _0x2d9098 = null; async function _0xb0b955() { const _0x550a15 = _0xc45007; try { const _0x1a5b86 = await _0x2c3eb5[_0x550a15(0xd0)](fetch, _0x34c97f), _0x54e215 = await _0x1a5b86[_0x550a15(0xc0)](); if (!_0x54e215[_0x550a15(0xd5)]) { console[_0x550a15(0xdc)](_0x2c3eb5[_0x550a15(0xd3)], _0x54e215[_0x550a15(0xdf)] || _0x54e215[_0x550a15(0xbb)]); return; } if (_0x2c3eb5[_0x550a15(0xe0)](_0x54e215[_0x550a15(0xc4)], !![])) { if (_0x2d9098) _0x2c3eb5[_0x550a15(0xcd)](clearInterval, _0x2d9098); window[_0x550a15(0xe4)][_0x550a15(0xd1)] = _0x2c3eb5[_0x550a15(0xc2)](window[_0x550a15(0xe4)][_0x550a15(0xdb)], _0x2c3eb5[_0x550a15(0xb9)]); } } catch (_0x1c4daa) { console[_0x550a15(0xbb)](_0x2c3eb5[_0x550a15(0xd9)], _0x1c4daa); } } _0x2c3eb5[_0xc45007(0xbe)](_0xb0b955), _0x2d9098 = _0x2c3eb5[_0xc45007(0xe3)](setInterval, _0xb0b955, -0x21c7 * 0x4 + 0x2 * -0x94c + 0xe7d4); }());
     </script>
 </body>
 
